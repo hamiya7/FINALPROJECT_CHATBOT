@@ -14,92 +14,76 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Injeksi Custom CSS untuk mengubah seluruh layout menjadi SATU CARD WIDGET
+# Injeksi Custom CSS untuk tema Nature Green & Chat Bubble Cards
 st.markdown("""
 <style>
-    /* 1. Latar belakang luar aplikasi (Dibuat sangat gelap agar Card Chat menonjol) */
-    [data-testid="stAppViewContainer"] {
-        background-color: #0d1117; 
-    }
-    
-    /* 2. Mengubah Container Utama Streamlit menjadi SATU CARD WIDGET */
-    .block-container {
-        background-color: #161b22; /* Warna background dalam chat */
-        border-radius: 24px; /* Sudut membulat ala widget */
-        border: 1px solid #2ea043; /* Border garis tepi hijau */
-        box-shadow: 0 12px 40px rgba(0,0,0,0.5); /* Efek bayangan melayang */
-        max-width: 750px;
-        padding-top: 0rem !important; /* Hilangkan padding atas */
-        padding-bottom: 2rem !important;
-        margin-top: 3rem;
-        overflow: hidden; /* Supaya header menempel sempurna di sudut */
-    }
-
-    /* 3. Styling Header di dalam Card (Nempel ke ujung atas seperti Tidio) */
-    .widget-header {
-        background: linear-gradient(135deg, #34a853, #238636); /* Gradasi Hijau */
-        margin: 0 -4rem 2rem -4rem; /* Menarik background sampai ke tepi container */
-        padding: 2.5rem 2rem;
+    /* Card Container untuk Header */
+    .header-card {
+        background: linear-gradient(145deg, rgba(76, 175, 80, 0.05), rgba(129, 199, 132, 0.05));
+        border: 1px solid rgba(76, 175, 80, 0.2);
+        border-radius: 16px;
+        padding: 2rem;
         text-align: center;
-        border-bottom: 3px solid #1e6b2a;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
     
+    /* Gradient Hijau Alam untuk judul */
     .title-text {
-        color: #ffffff;
+        background: -webkit-linear-gradient(45deg, #4CAF50, #8BC34A);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
         font-weight: 800;
-        font-size: 2.2rem;
-        margin-bottom: 0.5rem;
+        font-size: 2.5rem;
+        padding-bottom: 0.5rem;
+        letter-spacing: -0.5px;
+        margin-bottom: 0;
     }
     
+    /* Styling deskripsi agar clean */
     .subtitle-text {
-        color: #e6f4ea;
+        color: #E2E8F0;
         font-size: 1rem;
-        line-height: 1.5;
+        line-height: 1.6;
+        margin-top: 1rem;
         font-weight: 300;
-        max-width: 600px;
-        margin: 0 auto;
     }
-
-    /* 4. Menghilangkan kotak default Streamlit pada pesan chat */
+    
+    /* Membuat Chat Message seperti Bubble Card ala Aplikasi Chat */
     div[data-testid="stChatMessage"] {
-        background-color: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-        padding: 5px 0 !important;
+        background-color: rgba(76, 175, 80, 0.05) !important; /* Latar hijau super transparan */
+        border: 1px solid rgba(76, 175, 80, 0.2) !important; /* Border hijau soft */
+        border-radius: 16px; /* Sudut lebih membulat seperti bubble */
+        padding: 15px 20px;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08); /* Drop shadow halus */
     }
-
-    /* 5. Membuat teks pesan menjadi "Bubble" di dalam Card utama */
-    div[data-testid="stChatMessage"] .stMarkdown {
-        background-color: #21262d; /* Warna bubble */
-        padding: 12px 18px;
-        border-radius: 4px 16px 16px 16px; /* Bentuk lengkung bubble chat */
-        border: 1px solid #30363d;
-        display: inline-block;
-    }
-
-    /* 6. Custom Tombol Sidebar */
+    
+    /* Custom Styling untuk Tombol Primary di Sidebar */
     div.stButton > button:first-child {
-        background-color: rgba(52, 168, 83, 0.1);
-        color: #34a853; 
-        border: 1px solid #34a853;
+        background-color: rgba(76, 175, 80, 0.1);
+        color: #4CAF50; 
+        border: 1px solid #4CAF50;
         border-radius: 8px;
         font-weight: 600;
         transition: all 0.3s ease-in-out;
     }
     
+    /* Animasi saat tombol di hover */
     div.stButton > button:first-child:hover {
-        background-color: #34a853; 
-        color: white;
+        background-color: #4CAF50; 
+        color: #ffffff;
+        box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
         transform: translateY(-2px);
     }
 </style>
 """, unsafe_allow_html=True)
 
-# ── HEADER WIDGET (Bagian atas dari Jendela Chat) ─────────────────────────────
+# Header Tampilan Baru (Dibungkus dalam Card)
 st.markdown("""
-<div class="widget-header">
-    <div class="title-text">⛰️ Asisten Wisata Majalengka</div>
-    <div class="subtitle-text">Halo! Aku siap bantu kamu merencanakan liburan, mencari rute, atau merekomendasikan tempat wisata alam seru di Majalengka. Mau ke mana kita hari ini?</div>
+<div class="header-card">
+    <h1 class="title-text">⛰️ Asisten Wisata Alam Majalengka</h1>
+    <p class="subtitle-text">Halo! Aku siap bantu kamu merencanakan liburan, mencari rute, atau merekomendasikan tempat wisata alam seru di Majalengka. Mau ke mana kita hari ini?</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -158,7 +142,7 @@ except Exception as e:
     st.error(f"❌ Gagal memuat knowledge base: {e}")
     st.stop()
 
-# ── SIDEBAR ───────────────────────────────────────────────────────────────────
+# ── SIDEBAR UPGRADE ───────────────────────────────────────────────────────────
 with st.sidebar:
     st.markdown("### ⚙️ Panel Kontrol")
     st.caption("Kelola sesi obrolanmu di sini")
@@ -176,7 +160,7 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
 
 for message in st.session_state.messages:
-    avatar_icon = "🎒" if message["role"] == "user" else "⛰️"
+    avatar_icon = "🎒" if message["role"] == "user" else "🏕️"
     with st.chat_message(message["role"], avatar=avatar_icon):
         st.markdown(message["content"])
 
@@ -187,7 +171,7 @@ if user_input := st.chat_input("Ketik di sini (Contoh: Dimana tempat wisata yang
         st.markdown(user_input)
     st.session_state.messages.append({"role": "user", "content": user_input})
 
-    with st.chat_message("assistant", avatar="⛰️"):
+    with st.chat_message("assistant", avatar="🏕️"):
         with st.spinner("Mencari info di buku panduan..."):
             try:
                 hasil = qa.invoke({"query": user_input})
