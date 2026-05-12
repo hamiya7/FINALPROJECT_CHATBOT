@@ -6,16 +6,52 @@ from langchain_groq import ChatGroq
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
 
-# ── HALAMAN ───────────────────────────────────────────────────────────────────
-st.set_page_config(page_title="Asisten Wisata Majalengka", page_icon="⛰️")
-st.title("⛰️ Asisten Wisata Alam Majalengka")
-st.markdown(
-    "Halo! Aku siap bantu kamu merencanakan liburan, mencari rute, "
-    "atau merekomendasikan tempat wisata alam seru di Majalengka. "
-    "Mau ke mana kita hari ini?"
+# ── HALAMAN & CUSTOM CSS ──────────────────────────────────────────────────────
+st.set_page_config(
+    page_title="Asisten Wisata Majalengka", 
+    page_icon="⛰️",
+    layout="centered",
+    initial_sidebar_state="expanded"
 )
 
-# ── LOAD MODEL ────────────────────────────────────────────────────────────────
+# Injeksi Custom CSS untuk tampilan yang lebih modern
+st.markdown("""
+<style>
+    /* Gradient warna untuk judul */
+    .title-text {
+        background: -webkit-linear-gradient(45deg, #4CAF50, #8BC34A);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: 800;
+        font-size: 2.8rem;
+        padding-bottom: 0.5rem;
+    }
+    /* Styling untuk deskripsi/subtitle */
+    .subtitle-text {
+        color: #B0BEC5;
+        font-size: 1.1rem;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+    /* Sedikit modifikasi jarak pada chat */
+    .stChatMessage {
+        border-radius: 10px;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# Header Tampilan Baru
+st.markdown('<h1 class="title-text">⛰️ Asisten Wisata Alam Majalengka</h1>', unsafe_allow_html=True)
+st.markdown(
+    '<p class="subtitle-text">Halo! Aku siap bantu kamu merencanakan liburan, '
+    'mencari rute, atau merekomendasikan tempat wisata alam seru di Majalengka. '
+    'Mau ke mana kita hari ini?</p>', 
+    unsafe_allow_html=True
+)
+st.divider()
+
+
+# ── LOAD MODEL (TIDAK ADA PERUBAHAN) ──────────────────────────────────────────
 @st.cache_resource
 def load_knowledge_base():
     embeddings = HuggingFaceEmbeddings(
@@ -70,30 +106,39 @@ except Exception as e:
     st.error(f"❌ Gagal memuat knowledge base: {e}")
     st.stop()
 
-# ── SIDEBAR ───────────────────────────────────────────────────────────────────
-if st.sidebar.button("🗑️ Hapus Riwayat Chat"):
-    st.session_state.messages = []
-    st.rerun()
+# ── SIDEBAR UPGRADE ───────────────────────────────────────────────────────────
+with st.sidebar:
+    st.markdown("### ⚙️ Panel Kontrol")
+    st.caption("Kelola sesi obrolanmu di sini")
+    
+    if st.button("🗑️ Hapus Riwayat Chat", use_container_width=True, type="primary"):
+        st.session_state.messages = []
+        st.rerun()
 
-st.sidebar.markdown("---")
-st.sidebar.success("✅ Powered by Groq (Llama 3) — Fast & Free!")
+    st.markdown("---")
+    st.info("💡 **Tips:** Coba tanyakan spesifik seperti tempat camping, curug tersembunyi, atau rute hiking yang aman di Majalengka.")
+    st.success("✅ Powered by Groq (Llama 3) — Fast & Free!")
 
-# ── RIWAYAT CHAT ──────────────────────────────────────────────────────────────
+# ── RIWAYAT CHAT (DENGAN CUSTOM AVATAR) ───────────────────────────────────────
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
 for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
+    # Menggunakan custom icon untuk user dan asisten
+    avatar_icon = "🎒" if message["role"] == "user" else "🏕️"
+    with st.chat_message(message["role"], avatar=avatar_icon):
         st.markdown(message["content"])
 
 # ── INPUT PENGGUNA ────────────────────────────────────────────────────────────
-if user_input := st.chat_input("Contoh: Dimana tempat camping yang cocok buat pemula?"):
+if user_input := st.chat_input("Ketik di sini (Contoh: Dimana tempat camping untuk pemula?)"):
 
-    with st.chat_message("user"):
+    # Tampilan User
+    with st.chat_message("user", avatar="🎒"):
         st.markdown(user_input)
     st.session_state.messages.append({"role": "user", "content": user_input})
 
-    with st.chat_message("assistant"):
+    # Tampilan Asisten
+    with st.chat_message("assistant", avatar="🏕️"):
         with st.spinner("Mencari info di buku panduan..."):
             try:
                 hasil = qa.invoke({"query": user_input})
