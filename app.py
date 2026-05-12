@@ -14,13 +14,13 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Injeksi Custom CSS untuk tema Card Pastel Pink (Elegan & Soft)
+# Injeksi Custom CSS untuk tema Nature Green & Chat Bubble Cards
 st.markdown("""
 <style>
     /* Card Container untuk Header */
     .header-card {
-        background: linear-gradient(145deg, rgba(255, 154, 158, 0.05), rgba(254, 207, 239, 0.05));
-        border: 1px solid rgba(255, 154, 158, 0.2);
+        background: linear-gradient(145deg, rgba(76, 175, 80, 0.05), rgba(129, 199, 132, 0.05));
+        border: 1px solid rgba(76, 175, 80, 0.2);
         border-radius: 16px;
         padding: 2rem;
         text-align: center;
@@ -28,9 +28,9 @@ st.markdown("""
         box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
     
-    /* Gradient pastel pink untuk judul di dalam card */
+    /* Gradient Hijau Alam untuk judul */
     .title-text {
-        background: -webkit-linear-gradient(45deg, #FF9A9E, #FECFEF);
+        background: -webkit-linear-gradient(45deg, #4CAF50, #8BC34A);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         font-weight: 800;
@@ -49,21 +49,21 @@ st.markdown("""
         font-weight: 300;
     }
     
-    /* Membuat Chat Message seperti Card dengan aksen pink tipis */
-    .stChatMessage {
-        background-color: rgba(255, 154, 158, 0.03) !important; /* Latar belakang pink super transparan */
-        border: 1px solid rgba(255, 154, 158, 0.15) !important; /* Border pink soft */
-        border-radius: 12px;
-        padding: 15px;
+    /* Membuat Chat Message seperti Bubble Card ala Aplikasi Chat */
+    div[data-testid="stChatMessage"] {
+        background-color: rgba(76, 175, 80, 0.05) !important; /* Latar hijau super transparan */
+        border: 1px solid rgba(76, 175, 80, 0.2) !important; /* Border hijau soft */
+        border-radius: 16px; /* Sudut lebih membulat seperti bubble */
+        padding: 15px 20px;
         margin-bottom: 15px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08); /* Drop shadow halus */
     }
     
-    /* Custom Styling untuk Tombol Primary di Sidebar (Outline Style) */
+    /* Custom Styling untuk Tombol Primary di Sidebar */
     div.stButton > button:first-child {
-        background-color: rgba(255, 154, 158, 0.05);
-        color: #FF9A9E; 
-        border: 1px solid #FF9A9E;
+        background-color: rgba(76, 175, 80, 0.1);
+        color: #4CAF50; 
+        border: 1px solid #4CAF50;
         border-radius: 8px;
         font-weight: 600;
         transition: all 0.3s ease-in-out;
@@ -71,9 +71,9 @@ st.markdown("""
     
     /* Animasi saat tombol di hover */
     div.stButton > button:first-child:hover {
-        background-color: #FF9A9E; 
-        color: #1E1E1E;
-        box-shadow: 0 4px 15px rgba(255, 154, 158, 0.3);
+        background-color: #4CAF50; 
+        color: #ffffff;
+        box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
         transform: translateY(-2px);
     }
 </style>
@@ -160,7 +160,6 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
 
 for message in st.session_state.messages:
-    # Kembali pakai emotikon petualangan
     avatar_icon = "🎒" if message["role"] == "user" else "🏕️"
     with st.chat_message(message["role"], avatar=avatar_icon):
         st.markdown(message["content"])
