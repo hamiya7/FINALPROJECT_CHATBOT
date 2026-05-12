@@ -32,7 +32,7 @@ def load_knowledge_base():
     llm = ChatGoogleGenerativeAI(
         model="gemini-2.0-flash",
         temperature=0.7,
-        google_api_key="AIzaSyBXYyDShHeREuoSYdJulLUpDQc1oZpKP_A",
+        google_api_key="AIzaSyB3700j8pq504EbHg0U4tElFj9QVgIAWmA",
         max_retries=2,          # ← batasi retry agar tidak spam
         request_timeout=30,
     )
