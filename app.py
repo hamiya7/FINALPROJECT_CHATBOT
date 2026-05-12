@@ -30,7 +30,7 @@ def load_knowledge_base():
 
     # ✅ Groq — gratis, cepat, tidak ada quota ketat
     llm = ChatGroq(
-        model="llama3-8b-8192",
+        model="llama-3.1-8b-instant",
         temperature=0.7,
         groq_api_key=st.secrets["GROQ_API_KEY"]
     )
