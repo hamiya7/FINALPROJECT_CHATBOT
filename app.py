@@ -9,68 +9,83 @@ from langchain.prompts import PromptTemplate
 # ── HALAMAN & CUSTOM CSS ──────────────────────────────────────────────────────
 st.set_page_config(
     page_title="Asisten Wisata Majalengka", 
-    page_icon="🌸",
+    page_icon="⛰️",
     layout="centered",
     initial_sidebar_state="expanded"
 )
 
-# Injeksi Custom CSS untuk tema Modern Soft Pastel Pink
+# Injeksi Custom CSS untuk tema Card Pastel Pink (Elegan & Soft)
 st.markdown("""
 <style>
-    /* Gradient pastel pink modern untuk judul */
+    /* Card Container untuk Header */
+    .header-card {
+        background: linear-gradient(145deg, rgba(255, 154, 158, 0.05), rgba(254, 207, 239, 0.05));
+        border: 1px solid rgba(255, 154, 158, 0.2);
+        border-radius: 16px;
+        padding: 2rem;
+        text-align: center;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    
+    /* Gradient pastel pink untuk judul di dalam card */
     .title-text {
         background: -webkit-linear-gradient(45deg, #FF9A9E, #FECFEF);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         font-weight: 800;
-        font-size: 2.8rem;
+        font-size: 2.5rem;
         padding-bottom: 0.5rem;
         letter-spacing: -0.5px;
+        margin-bottom: 0;
     }
     
-    /* Styling deskripsi/subtitle agar lebih clean dan soft */
+    /* Styling deskripsi agar clean */
     .subtitle-text {
-        color: #E2E8F0; /* Abu-abu terang agar kontras di dark mode */
-        font-size: 1.05rem;
+        color: #E2E8F0;
+        font-size: 1rem;
         line-height: 1.6;
-        margin-bottom: 1.5rem;
-        font-weight: 300; /* Font lebih tipis untuk kesan modern */
+        margin-top: 1rem;
+        font-weight: 300;
     }
     
-    /* Custom Styling untuk Tombol Primary di Sidebar */
+    /* Membuat Chat Message seperti Card dengan aksen pink tipis */
+    .stChatMessage {
+        background-color: rgba(255, 154, 158, 0.03) !important; /* Latar belakang pink super transparan */
+        border: 1px solid rgba(255, 154, 158, 0.15) !important; /* Border pink soft */
+        border-radius: 12px;
+        padding: 15px;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    
+    /* Custom Styling untuk Tombol Primary di Sidebar (Outline Style) */
     div.stButton > button:first-child {
-        background-color: #F48FB1; /* Soft pink */
-        color: #1E1E1E; /* Teks gelap agar mudah dibaca */
-        border: none;
+        background-color: rgba(255, 154, 158, 0.05);
+        color: #FF9A9E; 
+        border: 1px solid #FF9A9E;
         border-radius: 8px;
         font-weight: 600;
         transition: all 0.3s ease-in-out;
     }
     
-    /* Efek saat tombol di-hover */
+    /* Animasi saat tombol di hover */
     div.stButton > button:first-child:hover {
-        background-color: #F06292; /* Pink sedikit lebih tajam */
-        color: white;
-        box-shadow: 0 4px 15px rgba(240, 98, 146, 0.4);
+        background-color: #FF9A9E; 
+        color: #1E1E1E;
+        box-shadow: 0 4px 15px rgba(255, 154, 158, 0.3);
         transform: translateY(-2px);
-    }
-
-    /* Memperhalus sudut area chat */
-    .stChatMessage {
-        border-radius: 12px;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# Header Tampilan Baru
-st.markdown('<h1 class="title-text">🌸 Asisten Wisata Alam Majalengka</h1>', unsafe_allow_html=True)
-st.markdown(
-    '<p class="subtitle-text">Halo! Aku siap bantu kamu merencanakan liburan, '
-    'mencari rute, atau merekomendasikan tempat wisata alam seru di Majalengka. '
-    'Mau ke mana kita hari ini?</p>', 
-    unsafe_allow_html=True
-)
-st.divider()
+# Header Tampilan Baru (Dibungkus dalam Card)
+st.markdown("""
+<div class="header-card">
+    <h1 class="title-text">⛰️ Asisten Wisata Alam Majalengka</h1>
+    <p class="subtitle-text">Halo! Aku siap bantu kamu merencanakan liburan, mencari rute, atau merekomendasikan tempat wisata alam seru di Majalengka. Mau ke mana kita hari ini?</p>
+</div>
+""", unsafe_allow_html=True)
 
 
 # ── LOAD MODEL (TIDAK ADA PERUBAHAN) ──────────────────────────────────────────
@@ -132,7 +147,6 @@ with st.sidebar:
     st.markdown("### ⚙️ Panel Kontrol")
     st.caption("Kelola sesi obrolanmu di sini")
     
-    # Tombol ini sekarang akan mengikuti custom CSS pink di atas
     if st.button("🗑️ Hapus Riwayat Chat", use_container_width=True, type="primary"):
         st.session_state.messages = []
         st.rerun()
@@ -146,7 +160,8 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
 
 for message in st.session_state.messages:
-    avatar_icon = "🎒" if message["role"] == "user" else "🌸"
+    # Kembali pakai emotikon petualangan
+    avatar_icon = "🎒" if message["role"] == "user" else "🏕️"
     with st.chat_message(message["role"], avatar=avatar_icon):
         st.markdown(message["content"])
 
@@ -157,7 +172,7 @@ if user_input := st.chat_input("Ketik di sini (Contoh: Dimana tempat wisata yang
         st.markdown(user_input)
     st.session_state.messages.append({"role": "user", "content": user_input})
 
-    with st.chat_message("assistant", avatar="🌸"):
+    with st.chat_message("assistant", avatar="🏕️"):
         with st.spinner("Mencari info di buku panduan..."):
             try:
                 hasil = qa.invoke({"query": user_input})
