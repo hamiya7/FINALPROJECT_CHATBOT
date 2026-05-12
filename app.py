@@ -7,7 +7,7 @@ from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
 
 # 1. KUNCI NYAWA AI (Masukkan API Key Google-mu yang asli di sini)
-os.environ["GOOGLE_API_KEY"] = "AIzaSyDp2HnbqhosTskOIcREoApH40ytfUY0Xb0"
+os.environ["GOOGLE_API_KEY"] = "AIzaSyBXYyDShHeREuoSYdJulLUpDQc1oZpKP_A"
 
 # 2. SETUP TAMPILAN WEB
 # Menggunakan ikon gunung/tenda agar relevan dengan tema wisata alam
@@ -25,7 +25,7 @@ def load_knowledge_base():
     db = FAISS.load_local("faiss_index_wisata", embeddings, allow_dangerous_deserialization=True)
     
     # C. Panggil Model Gemini (Sebagai mesin penjawab)
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.7)
+    llm = ChatGoogleGenerativeAI(model="gemini-pro", temperature=0.7)
     
     # D. Atur Peran dan Gaya Bahasa (Creative Parameter)
     prompt_template = """
