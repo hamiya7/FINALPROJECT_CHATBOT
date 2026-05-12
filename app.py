@@ -2,10 +2,9 @@ import streamlit as st
 import time
 from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_groq import ChatGroq
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
-from google.api_core.exceptions import ResourceExhausted
 
 # ── HALAMAN ───────────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Asisten Wisata Majalengka", page_icon="⛰️")
@@ -29,12 +28,11 @@ def load_knowledge_base():
         allow_dangerous_deserialization=True
     )
 
-    llm = ChatGoogleGenerativeAI(
-        model="gemini-2.0-flash",
+    # ✅ Groq — gratis, cepat, tidak ada quota ketat
+    llm = ChatGroq(
+        model="llama3-8b-8192",
         temperature=0.7,
-        google_api_key="AIzaSyB3700j8pq504EbHg0U4tElFj9QVgIAWmA",
-        max_retries=2,          # ← batasi retry agar tidak spam
-        request_timeout=30,
+        groq_api_key=st.secrets["GROQ_API_KEY"]
     )
 
     prompt_template = """
@@ -72,49 +70,21 @@ except Exception as e:
     st.error(f"❌ Gagal memuat knowledge base: {e}")
     st.stop()
 
-# ── RIWAYAT CHAT ──────────────────────────────────────────────────────────────
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-
-# Tombol hapus riwayat
+# ── SIDEBAR ───────────────────────────────────────────────────────────────────
 if st.sidebar.button("🗑️ Hapus Riwayat Chat"):
     st.session_state.messages = []
     st.rerun()
 
 st.sidebar.markdown("---")
-st.sidebar.info(
-    "**Tips:** Jika muncul error quota, tunggu sekitar 1 menit "
-    "lalu coba lagi. API Gemini gratis punya batas request per menit."
-)
+st.sidebar.success("✅ Powered by Groq (Llama 3) — Fast & Free!")
+
+# ── RIWAYAT CHAT ──────────────────────────────────────────────────────────────
+if "messages" not in st.session_state:
+    st.session_state.messages = []
 
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
-
-# ── FUNGSI INVOKE DENGAN RETRY MANUAL ────────────────────────────────────────
-def invoke_with_retry(qa_chain, query, max_retries=3, wait_seconds=15):
-    """Coba invoke, kalau kena rate limit tunggu lalu coba lagi."""
-    for attempt in range(max_retries):
-        try:
-            hasil = qa_chain.invoke({"query": query})
-            return hasil["result"]
-        except ResourceExhausted:
-            if attempt < max_retries - 1:
-                sisa_tunggu = wait_seconds * (attempt + 1)
-                st.warning(
-                    f"⏳ Quota API sedang penuh. "
-                    f"Mencoba lagi dalam {sisa_tunggu} detik... "
-                    f"(percobaan {attempt + 1}/{max_retries})"
-                )
-                time.sleep(sisa_tunggu)
-            else:
-                return (
-                    "⚠️ Maaf, quota API Gemini sedang habis. "
-                    "Silakan tunggu 1-2 menit lalu kirim pertanyaan lagi. "
-                    "Ini batas gratis dari Google, bukan masalah pada aplikasi."
-                )
-        except Exception as e:
-            return f"⚠️ Terjadi kesalahan: {str(e)}"
 
 # ── INPUT PENGGUNA ────────────────────────────────────────────────────────────
 if user_input := st.chat_input("Contoh: Dimana tempat camping yang cocok buat pemula?"):
@@ -125,7 +95,11 @@ if user_input := st.chat_input("Contoh: Dimana tempat camping yang cocok buat pe
 
     with st.chat_message("assistant"):
         with st.spinner("Mencari info di buku panduan..."):
-            jawaban_ai = invoke_with_retry(qa, user_input)
+            try:
+                hasil = qa.invoke({"query": user_input})
+                jawaban_ai = hasil["result"]
+            except Exception as e:
+                jawaban_ai = f"⚠️ Terjadi kesalahan: {str(e)}"
         st.markdown(jawaban_ai)
 
     st.session_state.messages.append({"role": "assistant", "content": jawaban_ai})
